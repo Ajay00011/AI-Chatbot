@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Techis — AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ INTRO OVERLAY ══ -->
+  <div id="intro-overlay" aria-hidden="true">
+    <div id="intro-logo-wrap">
+      <!-- Inline SVG logo — the ONE real logo used everywhere -->
+      <svg id="intro-logo-svg" class="logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Techis logo">
+        <rect x="4" y="4" width="40" height="40" rx="12" fill="#111111"/>
+        <path d="M12 14h24v4H28v16h-8V18H12z" fill="#FFFFFF"/>
+        <circle cx="35" cy="13" r="3" fill="#6366F1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ APP SHELL ══════ -->
+  <div id="app" class="app-shell" aria-hidden="true">
+
+    <!-- ─────────────────────── SIDEBAR ─────────────────── -->
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Sidebar">
+      <div class="sidebar-inner">
+
+        <!-- Sidebar header -->
+        <div class="sidebar-header">
+          <div class="sidebar-brand">
+            <svg class="logo-svg logo-nav" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Techis logo">
+              <rect x="4" y="4" width="40" height="40" rx="12" fill="#111111"/>
+              <path d="M12 14h24v4H28v16h-8V18H12z" fill="#FFFFFF"/>
+              <circle cx="35" cy="13" r="3" fill="#6366F1"/>
+            </svg>
+            <span class="brand-name sidebar-text">Techis</span>
+          </div>
+          <button id="sidebar-toggle" class="icon-btn sidebar-toggle-btn" aria-label="Toggle sidebar" title="Toggle sidebar">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+          </button>
+        </div>
+
+        <!-- New Chat -->
+        <div class="sidebar-section">
+          <button class="new-chat-btn" id="new-chat-btn" aria-label="New chat">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="sidebar-text">New Chat</span>
+            <kbd class="shortcut-badge sidebar-text">⌘K</kbd>
+          </button>
+        </div>
+
+        <!-- Search -->
+        <div class="sidebar-section sidebar-search-wrap">
+          <div class="sidebar-search">
+            <svg class="lucide search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="chat-search" class="sidebar-search-input sidebar-text" placeholder="Search chats…" aria-label="Search chats" />
+          </div>
+        </div>
+
+        <!-- Chat history -->
+        <div class="sidebar-history" id="sidebar-history">
+          <div class="history-group" id="pinned-group" style="display:none">
+            <div class="history-label">Pinned</div>
+            <ul class="history-list" id="pinned-list" role="list"></ul>
+          </div>
+          <div class="history-group" id="today-group">
+            <div class="history-label sidebar-text">Today</div>
+            <ul class="history-list" id="today-list" role="list"></ul>
+          </div>
+          <div class="history-group" id="yesterday-group">
+            <div class="history-label sidebar-text">Yesterday</div>
+            <ul class="history-list" id="yesterday-list" role="list"></ul>
+          </div>
+          <div class="history-group" id="week-group">
+            <div class="history-label sidebar-text">Previous 7 Days</div>
+            <ul class="history-list" id="week-list" role="list"></ul>
+          </div>
+        </div>
+
+        <!-- Sidebar footer -->
+        <div class="sidebar-footer">
+          <button class="sidebar-profile-btn" id="profile-trigger" aria-label="Open profile menu">
+            <div class="avatar">AM</div>
+            <div class="profile-info sidebar-text">
+              <span class="profile-name">Alex Morgan</span>
+              <span class="profile-email">alex@example.com</span>
+            </div>
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- ─────────────────────── MAIN AREA ─────────────────── -->
+    <main class="main-area" id="main-area">
+
+      <!-- Top navigation -->
+      <header class="topbar" role="banner">
+        <div class="topbar-left">
+          <button id="topbar-sidebar-toggle" class="icon-btn" aria-label="Toggle sidebar" title="Toggle sidebar">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+          </button>
+          <!-- Model selector -->
+          <div class="model-selector" id="model-selector" role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0" aria-label="Select AI model">
+            <span class="model-name" id="model-label">Techis AI</span>
+            <svg class="lucide chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="model-dropdown" id="model-dropdown" role="listbox" aria-label="AI Models">
+            <div class="model-option" role="option" data-model="Fast" tabindex="0">
+              <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <div><div class="model-opt-name">Fast</div><div class="model-opt-desc">Fastest responses</div></div>
+            </div>
+            <div class="model-option" role="option" data-model="Thinking" tabindex="0">
+              <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+              <div><div class="model-opt-name">Thinking</div><div class="model-opt-desc">Deep reasoning</div></div>
+            </div>
+            <div class="model-option active" role="option" data-model="Techis AI" tabindex="0">
+              <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <div><div class="model-opt-name">Techis AI</div><div class="model-opt-desc">Balanced &amp; smart</div></div>
+            </div>
+            <div class="model-option" role="option" data-model="Creative" tabindex="0">
+              <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              <div><div class="model-opt-name">Creative</div><div class="model-opt-desc">Creative writing</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn" id="share-btn" aria-label="Share conversation" title="Share">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+          </button>
+          <button class="icon-btn" id="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+            <svg class="lucide icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="lucide icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+          <button class="avatar-btn" id="topbar-profile-trigger" aria-label="Open profile" title="Profile">
+            <div class="avatar avatar-sm">AM</div>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat viewport -->
+      <div class="chat-viewport" id="chat-viewport" role="log" aria-live="polite" aria-label="Conversation">
+        <!-- Welcome screen -->
+        <div class="welcome-screen" id="welcome-screen">
+          <div class="welcome-content">
+            <div class="welcome-logo-wrap">
+              <svg class="logo-svg welcome-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="4" width="40" height="40" rx="12" fill="#111111"/>
+                <path d="M12 14h24v4H28v16h-8V18H12z" fill="#FFFFFF"/>
+                <circle cx="35" cy="13" r="3" fill="#6366F1"/>
+              </svg>
+            </div>
+            <h1 class="welcome-heading">Where curiosity meets intelligence.</h1>
+            <p class="welcome-subheading">You're not alone. Share what's on your mind — I'm here to listen, support, and help you heal.</p>
+            <div class="prompt-cards" id="prompt-cards">
+              <button class="prompt-card" data-prompt="I've been feeling really overwhelmed lately and I don't know how to cope. Can you help me?" aria-label="I feel overwhelmed suggestion">
+                <div class="prompt-card-icon">
+                  <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">I Feel Overwhelmed</div>
+                  <div class="prompt-card-desc">Talk through stress, anxiety, or emotional overload</div>
+                </div>
+              </button>
+              <button class="prompt-card" data-prompt="I'm going through a difficult time and feel really alone. I just need someone to talk to." aria-label="I need someone to talk to suggestion">
+                <div class="prompt-card-icon">
+                  <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Just Need to Talk</div>
+                  <div class="prompt-card-desc">A safe space to express your feelings freely</div>
+                </div>
+              </button>
+              <button class="prompt-card" data-prompt="I've been struggling with negative thoughts and self-doubt. How can I start to feel better about myself?" aria-label="Build self confidence suggestion">
+                <div class="prompt-card-icon">
+                  <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Build Self-Confidence</div>
+                  <div class="prompt-card-desc">Work through self-doubt and rebuild inner strength</div>
+                </div>
+              </button>
+              <button class="prompt-card" data-prompt="I recently went through a loss and I'm having a hard time grieving. Can you help me process this?" aria-label="Grief and healing suggestion">
+                <div class="prompt-card-icon">
+                  <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>
+                </div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Grief & Healing</div>
+                  <div class="prompt-card-desc">Process loss, sadness, and find a path toward healing</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages list -->
+        <div class="messages-list" id="messages-list" role="list"></div>
+
+        <!-- Scroll to bottom button -->
+        <button class="scroll-bottom-btn" id="scroll-bottom-btn" aria-label="Scroll to latest" style="display:none">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          <span>Scroll to latest</span>
+        </button>
+      </div>
+
+      <!-- ─── INPUT AREA ────────────────────────────────── -->
+      <div class="input-area" id="input-area">
+        <!-- Attachment previews -->
+        <div class="attachment-previews" id="attachment-previews"></div>
+
+        <!-- Drag overlay -->
+        <div class="drag-overlay" id="drag-overlay" aria-hidden="true">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          <span>Drop files here</span>
+        </div>
+
+        <div class="input-box" id="input-box">
+          <textarea
+            id="chat-input"
+            class="chat-input"
+            placeholder="Ask anything…"
+            rows="1"
+            aria-label="Message input"
+            aria-multiline="true"
+          ></textarea>
+          <div class="input-toolbar">
+            <div class="input-toolbar-left">
+              <button class="tool-btn" id="attach-btn" aria-label="Attach file" title="Attach file">
+                <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <input type="file" id="file-input" multiple style="display:none" aria-label="File upload" />
+              <button class="tool-btn toggle-btn" id="websearch-btn" aria-label="Toggle web search" title="Web Search" aria-pressed="false">
+                <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                <span>Web Search</span>
+              </button>
+              <button class="tool-btn toggle-btn" id="thinking-btn" aria-label="Toggle deep thinking" title="Deep Thinking" aria-pressed="false">
+                <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+                <span>Thinking</span>
+              </button>
+              <button class="tool-btn" id="voice-btn" aria-label="Voice input" title="Voice input">
+                <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              </button>
+            </div>
+            <div class="input-toolbar-right">
+              <span class="char-counter" id="char-counter" aria-live="polite" style="display:none">0 / 10,000</span>
+              <button class="send-btn" id="send-btn" aria-label="Send message" title="Send" disabled>
+                <svg class="lucide icon-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+                <svg class="lucide icon-stop" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="5" y="5" rx="2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="input-footer">
+          <span class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line · <kbd>Ctrl+K</kbd> for commands</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ MODALS & OVERLAYS ══ -->
+
+  <!-- Command Palette -->
+  <div id="command-palette" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Command palette" style="display:none">
+    <div class="command-palette-panel">
+      <div class="command-search-wrap">
+        <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="command-input" class="command-input" placeholder="Search commands…" aria-label="Command search" autocomplete="off" />
+        <kbd class="esc-badge">Esc</kbd>
+      </div>
+      <div class="command-list" id="command-list" role="listbox" aria-label="Commands"></div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Settings" style="display:none">
+    <div class="settings-panel">
+      <div class="settings-sidebar">
+        <div class="settings-title">Settings</div>
+        <nav class="settings-nav" aria-label="Settings sections">
+          <button class="settings-nav-item active" data-section="general">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            General
+          </button>
+          <button class="settings-nav-item" data-section="appearance">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            Appearance
+          </button>
+          <button class="settings-nav-item" data-section="chat">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat
+          </button>
+          <button class="settings-nav-item" data-section="voice">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+            Voice
+          </button>
+          <button class="settings-nav-item" data-section="shortcuts">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+            Shortcuts
+          </button>
+          <button class="settings-nav-item" data-section="privacy">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Privacy
+          </button>
+          <button class="settings-nav-item" data-section="about">
+            <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            About
+          </button>
+        </nav>
+      </div>
+      <div class="settings-content" id="settings-content">
+        <!-- Populated by JS -->
+      </div>
+      <button class="modal-close-btn" id="settings-close" aria-label="Close settings">
+        <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Drawer -->
+  <div id="profile-drawer" class="drawer-backdrop" style="display:none" role="dialog" aria-modal="true" aria-label="Profile">
+    <div class="profile-drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-avatar-row">
+          <div class="avatar avatar-lg">AM</div>
+          <div>
+            <div class="drawer-name">Alex Morgan</div>
+            <div class="drawer-email">alex@example.com</div>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="profile-close" aria-label="Close profile">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="drawer-plan">
+        <div class="plan-badge">Pro Plan</div>
+        <div class="plan-usage">
+          <div class="usage-label">Messages used</div>
+          <div class="usage-bar-wrap"><div class="usage-bar" style="width:42%"></div></div>
+          <div class="usage-count">42 / 100</div>
+        </div>
+      </div>
+      <nav class="drawer-nav" aria-label="Profile navigation">
+        <button class="drawer-nav-item" id="drawer-settings-btn">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Settings
+        </button>
+        <button class="drawer-nav-item" id="drawer-appearance-btn">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          Appearance
+        </button>
+        <button class="drawer-nav-item" id="drawer-prompts-btn">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+          Prompt Library
+        </button>
+        <button class="drawer-nav-item" id="drawer-help-btn">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          Help &amp; Support
+        </button>
+        <button class="drawer-nav-item drawer-logout" id="drawer-logout-btn">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+          Sign Out
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Prompt Library Modal -->
+  <div id="prompt-library-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Prompt Library" style="display:none">
+    <div class="library-panel">
+      <div class="library-header">
+        <h2>Prompt Library</h2>
+        <button class="modal-close-btn" id="library-close" aria-label="Close prompt library">
+          <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="library-list" id="library-list" role="list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div id="delete-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm deletion" style="display:none">
+    <div class="confirm-panel">
+      <div class="confirm-icon">
+        <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+      <h3>Delete this conversation?</h3>
+      <p>This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn-secondary" id="delete-cancel">Cancel</button>
+        <button class="btn-danger" id="delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context menu -->
+  <div id="chat-context-menu" class="context-menu" role="menu" style="display:none">
+    <button class="ctx-item" data-action="rename" role="menuitem">
+      <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+      Rename
+    </button>
+    <button class="ctx-item" data-action="pin" role="menuitem">
+      <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="17" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+      Pin
+    </button>
+    <button class="ctx-item" data-action="duplicate" role="menuitem">
+      <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+      Duplicate
+    </button>
+    <button class="ctx-item" data-action="archive" role="menuitem">
+      <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+      Archive
+    </button>
+    <div class="ctx-divider"></div>
+    <button class="ctx-item ctx-danger" data-action="delete" role="menuitem">
+      <svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/></svg>
+      Delete
+    </button>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- Voice recording indicator -->
+  <div id="voice-indicator" class="voice-indicator" style="display:none" aria-live="polite">
+    <div class="voice-dot"></div>
+    <span class="voice-label">Recording</span>
+    <span class="voice-timer" id="voice-timer">00:00</span>
+    <button class="voice-stop-btn" id="voice-stop-btn" aria-label="Stop recording">Stop</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
